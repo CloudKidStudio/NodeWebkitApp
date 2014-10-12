@@ -13,7 +13,7 @@
 	{
 		if (window.$ === undefined)
 		{
-			throw "jQuery must be included to use cloudkid.Browser";
+			throw "jQuery must be included to use cloudkid.UpdateChecker";
 		}
 
 		// The number of seconds until we can try another update
@@ -142,6 +142,11 @@
 				}
 				return;
 			}
+		}
+
+		if (DEBUG)
+		{
+			console.log("No updates");
 		}
 	};
 

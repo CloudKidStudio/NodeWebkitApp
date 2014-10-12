@@ -6,8 +6,11 @@
 	*  A bas web kit application
 	*  @class NodeWebkitApp
 	*  @namespace cloudkid
+	*  @constructor
+	*  @param {Number} [updaterTime=2] The minimum amount of time before reminding the user they're
+	*          is a new update for the application.
 	*/
-	var NodeWebkitApp = function()
+	var NodeWebkitApp = function(updaterTime)
 	{
 		/**
 		*  The optional utility that checks for update
@@ -68,7 +71,7 @@
 			// Check for application updates
 			if (cloudkid.UpdateChecker)
 			{
-				this.updater = new cloudkid.UpdateChecker();
+				this.updater = new cloudkid.UpdateChecker(updaterTime);
 			}
 
 			// Initialize the browser utility
@@ -84,11 +87,11 @@
 		// Catch any uncaught errors or fatal exceptions
 		if (APP)
 		{
-			process.on("uncaughtException", this.handleErrors.bind(this));
+			process.on("uncaughtException", this._handleErrors.bind(this));
 		}
 		if (WEB)
 		{
-			window.onerror = this.handleErrors.bind(this);
+			window.onerror = this._handleErrors.bind(this);
 		}
 	};
 
@@ -107,7 +110,7 @@
 		{
 			if (e.keyIdentifier === 'F12')
 			{
-				main.showDevTools();
+				this.main.showDevTools();
 			}
 			else if (e.keyIdentifier === 'F5')
 			{
