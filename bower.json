@@ -1,0 +1,32 @@
+{
+	"name": "node-webkit-app",
+	"version": "0.0.1",
+	"homepage": "https://github.com/CloudKidStudio/NodeWebkitApp",
+	"authors": [
+		"Matt Karl <matt@cloudkid.com>"
+	],
+	"description": "Abstract base application code and utilities for building node-webkit apps.",
+	"main": "dist/node-webkit-app.min.js",
+	"keywords": [
+		"node",
+		"node-webkit",
+		"file",
+		"browser"
+	],
+	"license": "MIT",
+	"dependencies": {
+		"jquery": "*",
+		"cloudkid-namespace": "*"
+	},
+	"ignore": [
+		"**/.*",
+		"node_modules",
+		"bower_components",
+		"docs",
+		"build.json",
+		"Gruntfile.js",
+		"package.json",
+		"test",
+		"tests"
+	]
+}

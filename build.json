@@ -1,0 +1,12 @@
+{
+	"name": "NodeWebkitApp",
+	"version": "0.0.1",
+	"description": "Abstract base application code and utilities for building node-webkit apps.",
+	"url": "https://github.com/CloudKidStudio/NodeWebkitApp",
+	"output": "node-webkit-app",
+	"main": [
+		"src/utils/Browser.js",
+		"src/utils/UpdateChecker.js",
+		"src/NodeWebkitApp.js"
+	]
+}
