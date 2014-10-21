@@ -3,7 +3,7 @@
 	window.cloudkid = window.cloudkid || {};
 
 	/**
-	*  A bas web kit application
+	*  A base web kit application
 	*  @class NodeWebkitApp
 	*  @namespace cloudkid
 	*  @constructor
@@ -115,7 +115,7 @@
 			else if (e.keyIdentifier === 'F5')
 			{
 				location.reload();
-			}	
+			}
 		};
 	}
 

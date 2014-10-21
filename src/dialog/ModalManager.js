@@ -13,12 +13,12 @@
 	ModalManager._dialogInitData = {};
 	
 	/**
-	* Entries for all active dialogs, to facilitate keeping them on top as well as
-	* callbacks and cleanup.
-	* @property {Array} _activeDialogs
-	* @static
-	* @private
-	*/
+	 * Entries for all active dialogs, to facilitate keeping them on top as well as
+	 * callbacks and cleanup.
+	 * @property {Array} _activeDialogs
+	 * @static
+	 * @private
+	 */
 	ModalManager._activeDialogs = [];
 	
 	/**
@@ -28,9 +28,13 @@
 	 *                      dialogs with ModalManager.open().
 	 * @param {String} pageUrl The HTML page that should be opened by the dialog.
 	 * @param {Object} windowOptions Standard Node WebKit window options.
+	 * @param {Object} dialogOptions Default options for the dialog, so they don't have to be passed
+	 *                               to open() each time.
+	 * @param {String} dialogOptions.dialogClass The namespace and class name of the ModalDialog
+	 *                                           subclass that should be created.
 	 * @static
 	 */
-	ModalManager.registerDialog = function(type, pageUrl, windowOptions)
+	ModalManager.registerDialog = function(type, pageUrl, windowOptions, dialogOptions)
 	{
 		//modal dialogs should always have focus when they open
 		windowOptions.focus = true;
@@ -38,7 +42,8 @@
 		ModalManager._dialogInitData[type] =
 		{
 			url: pageUrl,
-			options: windowOptions
+			windowOptions: windowOptions,
+			dialogOptions: dialogOptions
 		};
 	};
 	
@@ -50,16 +55,18 @@
 	 * @param {Function} callback A callback function for when the dialog is closed.
 	 *                            Parameters are dependent on what the specific dialog code
 	 *                            sends.
-	 * @param {Object} dialogOptions Options specific to the dialog system. This will be passed on
-	 *                               to the dialog as initialization data.
+	 * @param {Object} [dialogOptions] Options specific to the dialog system. This will be passed
+	 *                               on to the dialog as initialization data. Properties in
+	 *                               dialogOptions have priority over the default options passed
+	 *                               to registerDialog().
 	 * @return {Boolean} true if the dialog was opened successfully, false if the dialog type
 	 *                        does not exist or the window already has an open modal dialog.
 	 * @static
 	 */
 	ModalManager.open = function(type, parent, callback, dialogOptions)
 	{
-		var dialogData = ModalManager._dialogInitData[type];
-		if(!dialogData)
+		var dialogInitData = ModalManager._dialogInitData[type];
+		if(!dialogInitData)
 			return false;
 		for(var i = 0; i < ModalManager._activeDialogs.length; ++i)
 		{
@@ -73,8 +80,17 @@
 			focusListener: onFocus.bind(parent),
 			closedListener: onClosed.bind(parent),
 			callback: callback,
-			dialogWindow: gui.Window.open(dialogData.url, dialogData.options)
+			options: dialogOptions || {},
+			dialogWindow: gui.Window.open(dialogInitData.url, dialogInitData.windowOptions)
 		};
+		//apply default dialog options.
+		for(var key in dialogData.dialogOptions)
+		{
+			if(!data.options.hasOwnProperty(key))
+			{
+				data.options[key] = dialogInitData.dialogOptions[key];
+			}
+		}
 		ModalManager._activeDialogs.push(data);
 		//add an input blocker to the parent window
 		var doc = parent.window.document;
@@ -86,11 +102,26 @@
 		blocker.style.zIndex = "10";
 		parent.window.document.body.appendChild(blocker);
 		//add listeners to the parent window to prevent focus nonsense
+		//and detect closing of windows
 		parent.addListener("focus", data.focusListener);
 		parent.addListener("closed", data.closedListener);
-		//intialize the dialog itself
-		data.dialogWindow.window.cloudkid.ModalDialog._init(this, dialogOptions);
+		//add a listener for when the dialog is loaded
+		data.onLoaded = onDialogLoaded.bind(data.dialogWindow);
 	};
+	
+	function onDialogLoaded(dialogWindow)
+	{
+		for(var i = 0; i < ModalManager._activeDialogs.length; ++i)
+		{
+			if(ModalManager._activeDialogs[i].dialogWindow == dialogWindow)
+			{
+				data = ModalManager._activeDialogs[i];
+				dialogWindow.removeListener("loaded", data.onLoaded);
+				
+				dialogWindow.window.cloudkid.ModalDialog._init(this, data.options);
+			}
+		}
+	}
 	
 	/**
 	 * Closes a dialog. The dialog will automatically call this function, you do not need to.
@@ -126,13 +157,13 @@
 	};
 	
 	/**
-	* A listener for when a parent of an active dialog receives focus. This function
-	* will be bound on a per-window basis.
-	* @method onFocus
-	* @param {nw.gui.Window} parent The parent window.
-	* @static
-	* @private
-	*/
+	 * A listener for when a parent of an active dialog receives focus. This function
+	 * will be bound on a per-window basis.
+	 * @method onFocus
+	 * @param {nw.gui.Window} parent The parent window.
+	 * @static
+	 * @private
+	 */
 	function onFocus(parent)
 	{
 		var data;
@@ -194,7 +225,9 @@
 		//clean up listeners
 		data.parentWindow.removeListener("focus", data.focusListener);
 		data.parentWindow.removeListener("closed", data.closedListener);
-		//close the child dialog
+		//tell the dialog to clean itself up
+		data.dialogWindow.window.cloudkid.ModalDialog._cleanup();
+		//close the dialog
 		data.dialogWindow.close(true);
 	}
 	
