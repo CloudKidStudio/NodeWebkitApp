@@ -1,7 +1,5 @@
 (function(undefined){
 	
-	var gui = require('nw.gui');
-	
 	/**
 	*  A class to represent a modal dialog instance. Subclass ModalDialog in order to use it.
 	*  Use the ModalManager to create dialogs. They will not function if you create them yourself.
@@ -34,14 +32,15 @@
 	* Creates the dialog. This function is called by the ModalManager.
 	* @method _init
 	* @param {cloudkid.ModalManager} manager The ModalManager that created this dialog.
+	* @param {nw.gui.Window} win The Node WebKit Window for this dialog.
 	* @param {Object} options The dialog options for this dialog.
 	* @static
 	* @private
 	*/
-	ModalDialog._init = function(manager, options)
+	ModalDialog._init = function(manager, win, options)
 	{
 		_manager = manager;
-		_win = gui.Window.get(window);
+		_win = win;
 		var DialogConstructor = namespace(options.dialogClass);
 		_instance = new DialogConstructor(options);
 		_win.addListener("closed", onClosed);

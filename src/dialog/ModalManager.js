@@ -77,8 +77,8 @@
 		var data =
 		{
 			parentWindow: parent,
-			focusListener: onFocus.bind(parent),
-			closedListener: onClosed.bind(parent),
+			focusListener: onFocus.bind(this, parent),
+			closedListener: onClosed.bind(this, parent),
 			callback: callback,
 			options: dialogOptions || {},
 			dialogWindow: gui.Window.open(dialogInitData.url, dialogInitData.windowOptions)
@@ -106,7 +106,7 @@
 		parent.addListener("focus", data.focusListener);
 		parent.addListener("closed", data.closedListener);
 		//add a listener for when the dialog is loaded
-		data.onLoaded = onDialogLoaded.bind(data.dialogWindow);
+		data.onLoaded = onDialogLoaded.bind(this, data.dialogWindow);
 	};
 	
 	function onDialogLoaded(dialogWindow)
@@ -116,9 +116,11 @@
 			if(ModalManager._activeDialogs[i].dialogWindow == dialogWindow)
 			{
 				data = ModalManager._activeDialogs[i];
+				//remove the listener
 				dialogWindow.removeListener("loaded", data.onLoaded);
-				
-				dialogWindow.window.cloudkid.ModalDialog._init(this, data.options);
+				delete data.onLoaded;
+				//initialize the dialog
+				dialogWindow.window.cloudkid.ModalDialog._init(this, dialogWindow, data.options);
 			}
 		}
 	}
