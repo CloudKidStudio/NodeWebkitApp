@@ -84,7 +84,7 @@
 			dialogWindow: gui.Window.open(dialogInitData.url, dialogInitData.windowOptions)
 		};
 		//apply default dialog options.
-		for(var key in dialogData.dialogOptions)
+		for(var key in dialogInitData.dialogOptions)
 		{
 			if(!data.options.hasOwnProperty(key))
 			{
@@ -96,6 +96,8 @@
 		var doc = parent.window.document;
 		var blocker = doc.createElement("div");
 		blocker.className = "modal-dialog-blocker";
+		blocker.style.top = "0px";
+		blocker.style.left = "0px";
 		blocker.style.width = "100%";
 		blocker.style.paddingBottom = "100%";
 		blocker.style.position = "absolute";
@@ -107,6 +109,7 @@
 		parent.addListener("closed", data.closedListener);
 		//add a listener for when the dialog is loaded
 		data.onLoaded = onDialogLoaded.bind(this, data.dialogWindow);
+		data.dialogWindow.addListener("loaded", data.onLoaded);
 	};
 	
 	function onDialogLoaded(dialogWindow)
@@ -140,7 +143,7 @@
 		{
 			if(ModalManager._activeDialogs[i].dialogWindow == dialogWindow)
 			{
-				data = windowData[i];
+				data = ModalManager._activeDialogs[i];
 				break;
 			}
 		}
@@ -173,7 +176,7 @@
 		{
 			if(ModalManager._activeDialogs[i].parentWindow == parent)
 			{
-				data = windowData[i];
+				data = ModalManager._activeDialogs[i];
 				//redirect focus
 				data.dialogWindow.focus();
 				break;
@@ -196,7 +199,7 @@
 		{
 			if(ModalManager._activeDialogs[i].parentWindow == parent)
 			{
-				data = windowData[i];
+				data = ModalManager._activeDialogs[i];
 				//remove the window data
 				cleanupDialog(data);
 				break;
@@ -219,7 +222,7 @@
 		//remove from the list
 		ModalManager._activeDialogs.splice(i, 1);
 		//remove the blocker
-		var nodes = data.parentWindow.document.getElementsByClasName("modal-dialog-blocker");
+		var nodes = data.parentWindow.document.getElementsByClassName("modal-dialog-blocker");
 		for(i = 0; i < nodes.length; ++i)
 		{
 			nodes[i].parentNode.removeChild(nodes[i]);

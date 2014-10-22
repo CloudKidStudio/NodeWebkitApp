@@ -64,7 +64,7 @@
 	*/
 	ModalDialog.close = function()
 	{
-		_manager.close([_win].concat(arguments));
+		_manager.close.apply(_manager, [_win].concat(Array.prototype.slice.call(arguments)));
 	};
 	
 	/**
