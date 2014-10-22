@@ -221,15 +221,16 @@
 		
 		//remove from the list
 		ModalManager._activeDialogs.splice(i, 1);
+		var parentWindow = data.parentWindow;
 		//remove the blocker
-		var nodes = data.parentWindow.document.getElementsByClassName("modal-dialog-blocker");
+		var nodes = parentWindow.window.document.getElementsByClassName("modal-dialog-blocker");
 		for(i = 0; i < nodes.length; ++i)
 		{
 			nodes[i].parentNode.removeChild(nodes[i]);
 		}
 		//clean up listeners
-		data.parentWindow.removeListener("focus", data.focusListener);
-		data.parentWindow.removeListener("closed", data.closedListener);
+		parentWindow.removeListener("focus", data.focusListener);
+		parentWindow.removeListener("closed", data.closedListener);
 		//tell the dialog to clean itself up
 		data.dialogWindow.window.cloudkid.ModalDialog._cleanup();
 		//close the dialog
