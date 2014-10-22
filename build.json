@@ -7,6 +7,10 @@
 	"main": [
 		"src/utils/Browser.js",
 		"src/utils/UpdateChecker.js",
-		"src/NodeWebkitApp.js"
+		"src/NodeWebkitApp.js",
+		"src/ModalManager.js",
+		"src/ContextMenu.js",
+		"src/ModalDialog.js",
+		"src/SimpleDialog.js"
 	]
 }
