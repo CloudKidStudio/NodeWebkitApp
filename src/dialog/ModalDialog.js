@@ -3,6 +3,9 @@
 	/**
 	*  A class to represent a modal dialog instance. Subclass ModalDialog in order to use it.
 	*  Use the ModalManager to create dialogs. They will not function if you create them yourself.
+	*  Your dialog HTML file needs to load the CloudKid Namespace library, ModalDialog.js, and the
+	*  file for your subclass of ModalDialog, like SimpleDialog.js.
+	*
 	*  @class ModalDialog
 	*  @namespace cloudkid
 	*  @constructor
@@ -11,6 +14,26 @@
 	var ModalDialog = function(options)
 	{
 		//Subclass constructor should set stuff up
+		
+		/**
+		* The window for this dialog. This reference is provided in case
+		* your dialog needs to open another dialog.
+		*
+		* @property {nw.gui.Window} _win
+		* @private
+		* @readOnly
+		*/
+		this._win = null;
+		
+		/**
+		* The dialog manager for the application. This reference is provided in case
+		* your dialog needs to open another dialog.
+		*
+		* @property {cloudkid.ModalManager} _manager
+		* @private
+		* @readOnly
+		*/
+		this._manager = null;
 	};
 	
 	var p = ModalDialog.prototype = {};
@@ -26,6 +49,7 @@
 	 */
 	p.destroy = function()
 	{
+		this._manager = this._win = null;
 	};
 	
 	/**
@@ -43,6 +67,8 @@
 		_win = win;
 		var DialogConstructor = namespace(options.dialogClass);
 		_instance = new DialogConstructor(options);
+		_instance._manager = _manager;
+		_instance._win = _win;
 		_win.addListener("closed", onClosed);
 	};
 	

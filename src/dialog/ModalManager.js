@@ -2,6 +2,18 @@
 	
 	var gui = require('nw.gui');
 	
+	/**
+	*  A class for managing dialogs. This class should be contained in your main application
+	*  window.
+	*  To use a dialog, first register the dialog with ModalManager.register(). You then can
+	*  create the registered dialog using ModalManager.open(). When a dialog is opened, the parent
+	*  window has a blocker created with a css class of "modal-dialog-blocker".
+	*  If the parent window is closed, the dialog will automatically be closed.
+	*
+	*  @class ModalManager
+	*  @namespace cloudkid
+	*  @static
+	*/
 	var ModalManager = {};
 	
 	/**
@@ -34,7 +46,7 @@
 	 *                                           subclass that should be created.
 	 * @static
 	 */
-	ModalManager.registerDialog = function(type, pageUrl, windowOptions, dialogOptions)
+	ModalManager.register = function(type, pageUrl, windowOptions, dialogOptions)
 	{
 		//modal dialogs should always have focus when they open
 		windowOptions.focus = true;
