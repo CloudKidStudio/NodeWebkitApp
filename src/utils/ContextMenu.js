@@ -9,7 +9,7 @@
 	*		[
 	*			{
 	*				label: "My menu item",//Required
-	*				callback: function(){},//Required
+	*				callback: function(){},//Required for most items
 	*				tooltip: "My optional tooltip",//optional
 	*				checked: false,//Optional, omitting makes a normal item instead of a checkbox
 	*				enabled: false,//Optional, defaults to true
@@ -179,12 +179,14 @@
 				item = new gui.MenuItem(
 					{
 						label: entry.label,
-						click: entry.callback,
 						tooltip: entry.tooltip,
 						type: entry.hasOwnProperty("checked") ? "checkbox" : "normal",
 						checked: entry.checked,
 						enabled: entry.hasOwnProperty("enabled") ? entry.enabled : true
 					});
+				//add the callback separately in case it doesn't exist
+				if(entry.callback)
+					item.click = entry.callback;
 				if(entry.submenu)
 				{
 					item.submenu = ContextMenu.createMenu(entry.submenu);
@@ -192,6 +194,7 @@
 			}
 			menu.append(item);
 		}
+		return menu;
 	};
 	
 	// Assign to namespace
