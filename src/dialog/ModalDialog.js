@@ -17,7 +17,8 @@
 		
 		/**
 		* The window for this dialog. This reference is provided in case
-		* your dialog needs to open another dialog.
+		* your dialog needs to open another dialog. It is set after the
+		* constructor has completed.
 		*
 		* @property {nw.gui.Window} _win
 		* @private
@@ -27,7 +28,8 @@
 		
 		/**
 		* The dialog manager for the application. This reference is provided in case
-		* your dialog needs to open another dialog.
+		* your dialog needs to open another dialog. It is set after the
+		* constructor has completed.
 		*
 		* @property {cloudkid.ModalManager} _manager
 		* @private
@@ -70,6 +72,8 @@
 		_instance._manager = _manager;
 		_instance._win = _win;
 		_win.addListener("closed", onClosed);
+		//ensure that the window is closed
+		_win.show();
 	};
 	
 	/**

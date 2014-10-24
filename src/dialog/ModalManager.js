@@ -1,6 +1,6 @@
 (function(undefined){
 	
-	var gui = require('nw.gui');
+	var gui = window.require ? require('nw.gui') : null;
 	
 	/**
 	*  A class for managing dialogs. This class should be contained in your main application
@@ -50,6 +50,8 @@
 	{
 		//modal dialogs should always have focus when they open
 		windowOptions.focus = true;
+		//hide dialogs until they have initialized
+		windowOptions.show = false;
 		//create an entry for later retrieval
 		ModalManager._dialogInitData[type] =
 		{
@@ -77,6 +79,12 @@
 	 */
 	ModalManager.open = function(type, parent, callback, dialogOptions)
 	{
+		if(!gui)
+		{
+			if(callback)
+				callback();
+			return;
+		}
 		var dialogInitData = ModalManager._dialogInitData[type];
 		if(!dialogInitData)
 			return false;
