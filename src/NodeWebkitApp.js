@@ -37,10 +37,20 @@
 		*/
 		this.main = null;
 
+		/**
+		*  If we can resize the window
+		*  @property {Boolean} resizable
+		*/
+		this.resizable = true;
+
 		if (APP)
 		{
 			var gui = this.gui = require('nw.gui');
 			var main = this.main = this.gui.Window.get();
+			var fs = require('fs');
+
+			var pack = JSON.parse(fs.readFileSync('package.json'));
+			this.resizable = pack.window.resizable || true;
 
 			if (DEBUG)
 			{
@@ -60,8 +70,11 @@
 				var rect = JSON.parse(localStorage.getItem('windowSettings') || 'null');
 				if (rect)
 				{
-					main.width = rect.width;
-					main.height = rect.height;
+					if (this.resizable)
+					{
+						main.width = rect.width;
+						main.height = rect.height;
+					}
 					main.x = rect.x;
 					main.y = rect.y;
 				}
@@ -147,12 +160,18 @@
 		var main = this.main;
 		var gui = this.gui;
 
-		localStorage.setItem('windowSettings', JSON.stringify({
-			width : main.width,
-			height : main.height,
+		var rect = {
 			x : main.x,
 			y : main.y
-		}));
+		};
+
+		if (this.resizable)
+		{
+			rect.width = main.width;
+			rect.height = main.height;
+		}
+
+		localStorage.setItem('windowSettings', JSON.stringify(rect));
 		main.hide();
 
 		if (this.browser)
