@@ -1,4 +1,4 @@
-(function(window){
+(function(window, undefined){
 
 	window.cloudkid = window.cloudkid || {};
 
@@ -43,14 +43,23 @@
 		*/
 		this.resizable = true;
 
+		/**
+		*  The contents of the package JSON file
+		*  @property {object} packageData
+		*/
+		this.packageData = null;
+
 		if (APP)
 		{
 			var gui = this.gui = require('nw.gui');
 			var main = this.main = this.gui.Window.get();
 			var fs = require('fs');
 
-			var pack = JSON.parse(fs.readFileSync('package.json'));
-			this.resizable = pack.window.resizable || true;
+			var pack = this.packageData = JSON.parse(fs.readFileSync('package.json'));
+			var winConfig = pack.window;
+
+			this.resizable = winConfig.resizable !== undefined ? 
+				winConfig.resizable : true;
 
 			if (DEBUG)
 			{
@@ -74,6 +83,11 @@
 					{
 						main.width = rect.width;
 						main.height = rect.height;
+					}
+					else
+					{
+						main.height = winConfig.height;
+						main.width = winConfig.width;
 					}
 					main.x = rect.x;
 					main.y = rect.y;
