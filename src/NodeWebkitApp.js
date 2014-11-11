@@ -92,6 +92,11 @@
 					main.x = rect.x;
 					main.y = rect.y;
 				}
+				else if (!this.resizable)
+				{
+					main.height = winConfig.height;
+					main.width = winConfig.width;
+				}
 			}
 			catch(e){}
 
