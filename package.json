@@ -1,7 +1,8 @@
 {
 	"private": true,
+	"version": "0.0.2",
 	"dependencies": {
 		"grunt": "~0.4.5",
-		"grunt-library-builder": "*"
+		"library-grunt": "*"
 	}
 }

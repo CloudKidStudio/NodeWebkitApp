@@ -1,1 +1,1 @@
-module.exports = require('grunt-library-builder');
+module.exports = require('library-grunt');

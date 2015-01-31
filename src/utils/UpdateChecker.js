@@ -84,7 +84,7 @@
 			// Format the repository url to get the tags
 			var url = data.repository.url
 				.replace('http:', 'https:')
-				.replace('github.com', 'api.github.com/repos') + "/tags";
+				.replace('github.com', 'api.github.com/repos') + "/releases";
 				
 			// Load the tags json from the github api
 			$.getJSON(url, self.onTagsLoaded);
@@ -100,30 +100,35 @@
 	/**
 	*  Handler for loading the releases JSON from the github API
 	*  @method onTagsLoaded
-	*  @param {array} tags The list of tags
+	*  @param {array} releases The list of releases
 	*/
-	p.onTagsLoaded = function(tags)
+	p.onTagsLoaded = function(releases)
 	{
 		if (this._destroyed) return;
 
 		localStorage.setItem('lastUpdateCheck', Date.now());
 
-		if (!tags || !Array.isArray(tags) || tags.length === 0)
+		if (!releases || !Array.isArray(releases) || releases.length === 0)
 		{
 			if (DEBUG)
 			{
-				console.debug("No tags found for this project, no update-check.");
+				console.debug("No releases found for this project, no update-check.");
 			}
 			return;
 		}
 
 		var semver = require('semver');
-		var i, len = tags.length, tag;
+		var i, len = releases.length, release, tag;
 
 		for(i = 0; i < len; i++)
 		{
-			tag = tags[i];
-			if (semver.valid(tag.name) && semver.gt(tag.name, this.currentTag))
+			release = releases[i];
+			tag = release.tag_name;
+
+			// Exclude pre-releases
+			if (!release.prerelease && 
+				semver.valid(tag) && 
+				semver.gt(tag, this.currentTag))
 			{
 				if (confirm("An update is available. Download now?"))
 				{
@@ -133,11 +138,11 @@
 						var gui = require('nw.gui');
 
 						// Open URL with default browser.
-						gui.Shell.openExternal(this.repository + "/releases/latest");
+						gui.Shell.openExternal(this.repository + '/releases/tag/' + tag);
 					}
 					if (WEB)
 					{
-						window.open(this.repository + '/releases/latest');
+						window.open(this.repository + '/releases/tag/' + tag);
 					}
 				}
 				return;
