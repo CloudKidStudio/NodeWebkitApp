@@ -166,6 +166,10 @@
 		if (DEBUG)
 		{
 			console.error(e);
+			if (e.stack)
+			{
+				console.error(e.stack);
+			}
 		}
 	};
 
